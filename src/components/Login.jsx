@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
@@ -8,6 +9,7 @@ function Login() {
   const [password, setPassword] = useState('');
   const [selectedRole, setSelectedRole] = useState('regular');
   const [error, setError] = useState('');
+
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -15,19 +17,20 @@ function Login() {
     e.preventDefault();
     setError('');
 
-    // Basic validation
     if (!username.trim() || !password.trim()) {
       setError('Please enter both username and password');
       return;
     }
 
-    // Mock authentication - accepts any username/password
-    // In a real app, this would validate against a backend
     try {
       login(username, password, selectedRole);
-      // Redirect to saved articles after successful login
-      navigate('/saved');
-    } catch (err) {
+
+      if (selectedRole === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/saved');
+      }
+    } catch {
       setError('Login failed. Please try again.');
     }
   };
@@ -36,7 +39,9 @@ function Login() {
     <div className="login-container">
       <div className="login-card">
         <h2>Login to NewsReader</h2>
-        <p className="login-subtitle">Access your personalized news experience</p>
+        <p className="login-subtitle">
+          Access your personalized news experience
+        </p>
 
         {error && <div className="error-message">{error}</div>}
 
@@ -71,7 +76,7 @@ function Login() {
               onChange={(e) => setSelectedRole(e.target.value)}
             >
               <option value="regular">Regular User</option>
-              <option value="premium">Premium User</option>
+              <option value="admin">Admin User</option>
             </select>
           </div>
 
@@ -82,12 +87,12 @@ function Login() {
 
         <div className="demo-accounts">
           <p className="demo-title">Demo Accounts (for testing):</p>
-          <p>Any username/password combination will work</p>
-          <p>Select "Regular" or "Premium" to test different access levels</p>
+          <p>Use any username and password combination.</p>
+          <p>Select Regular or Admin to test different access levels.</p>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default Login;
